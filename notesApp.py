@@ -1,5 +1,6 @@
-import Notepad
+
 from Notepad.note import Note
+from Notepad.notesDisplay import NotesDisplay
 from Notepad.notesService import NotesService
 
 
@@ -7,6 +8,7 @@ from Notepad.notesService import NotesService
 class NotesApp:
       def __init__(self):
             self.notesService = NotesService()
+            self.display = NotesDisplay()
       
       def add_note(self, title, body):
             notes = self.notesService.load_notes()
@@ -16,7 +18,7 @@ class NotesApp:
             notes.append(new_note)
             self.notesService.save_notes(notes)
             print("Новая заметка добавлена.")
-            self.notesService.display_notes(new_note)
+            self.display.display_notes([new_note])
       
       def edit_notes(self, note_id, title, body):
             notes = self.notesService.load_notes()
@@ -27,40 +29,51 @@ class NotesApp:
                         note.set_date_time()
                         break
             self.notesService.save_notes(notes)
-            print(f"Заметка {note.id} изменена")
-            self.notesService.display_notes(notes)
+            print(f"Заметка {note_id} изменена")
+            self.display.display_note_by_id(notes, note_id)
       
       def delete_notes(self, note_id):
             notes = self.notesService.load_notes()
-            notes = [note for note in notes if note.id != note_id and input == int]
-            self.notesService.save_notes(notes)
-            print(f"Заметка {note_id} удалена")
-            self.notesService.display_notes(notes)
+            for note in notes:
+                if note.id == note_id:
+                    notes = [n for n in notes if n.id != note_id]
+                    self.notesService.save_notes(notes)
+                    print(f"Заметка {note_id} удалена")
+                    self.display.display_notes(notes)
+                    return
+            print(f"Заметка с ID {note_id} не найдена.")
+            
+      def delete_everything(self):
+            self.notesService.delete_all_notes()
+            print("Все заметки удалены.")
+            self.display.display_notes([]) 
             
       def show_notes(self, filter_date=None):
             notes = self.notesService.load_notes()
             if filter_date:
                   filtered_notes = [note for note in notes if note.date_time.startswith(filter_date)]
-                  self.notesService.display_notes(filtered_notes)
+                  self.display.display_notes(filtered_notes)
             else:
-                  self.notesService.display_notes(notes)
+                  self.display.display_notes(notes)
                   
       def show_selected_note_by_id(self, note_id):
             notes = self.notesService.load_notes()
-            self.notesService.display_note_by_id(notes, note_id)
+            self.display.display_note_by_id(notes, note_id)
       
-      def run(self):
+      def run(self): 
+          
         while True:
             print("\nМеню:")
             print("1. Показать заметки")
             print("2. Добавить заметку")
             print("3. Отредактировать заметку")
             print("4. Удалить заметку")
-            print("5. Показать заметки с фильтром")
-            print("6. Показать одну заметку по ID")
-            print("7. Выход")
+            print("5. Очистить все заметки")
+            print("6. Показать заметки с фильтром")
+            print("7. Показать одну заметку по ID")
+            print("8. Выход")
 
-            choice = input("Введите число (1-6): ")
+            choice = input("Введите число (1-8): ")
 
             if choice == "1":
                 self.show_notes()
@@ -77,12 +90,14 @@ class NotesApp:
                 note_id = int(input("Введите ID заметки для удаления: "))
                 self.delete_notes(note_id)
             elif choice == "5":
-                filter_date = input("Введите данные по медели для сортировки по дате (DD-MM-YYYY): ")
+                filter_date = input("Введите данные по модели для сортировки по дате (DD-MM-YYYY): ")
                 self.show_notes(filter_date)
             elif choice == "6":
-                note_id = int(input("Введите ID заметки для поиска совпадений: "))
-                self.notesService.display_note_by_id(self.notesService.load_notes(), note_id)
+                self.delete_everything()
             elif choice == "7":
+                note_id = int(input("Введите ID заметки для поиска совпадений: "))
+                self.display.display_note_by_id(self.notesService.load_notes(), note_id)
+            elif choice == "8":
                 print("Выход произведен успешно.")
                 break
             else:

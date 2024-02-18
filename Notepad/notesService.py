@@ -1,7 +1,6 @@
 import csv
 import os
 
-from tabulate import tabulate
 from Notepad.note import HEADERS, Note
 
 class NotesService:
@@ -31,36 +30,8 @@ class NotesService:
                     "Body": note.body,
                     "Date/Time": note.date_time
                 })
+                             
+    def delete_all_notes(self):
+        with open(self.file_path, "w", newline="", encoding='utf-8') as file:
+            file.write("") 
 
-    def display_one_note(self, note):
-        try:
-            data = {"ID": note.id, "Title": note.title, "Body": note.body, "Date/Time": note.date_time}
-            headers = "keys"
-            table = tabulate([data], headers=headers, tablefmt="grid")
-            print(table)
-            tabulate_done = True
-        except Exception as e:
-            print(f"Ошибка при отображении с использованием tabulate. Установите tabulate и повторите попытку: {e}")
-            tabulate_done = False
-
-        if not tabulate_done:
-            print("ID: {:>10}".format(note.id))
-            print("Title: {:>10}".format(note.title))
-            print("Body: {:>10}".format(note.body))
-            print("Date/Time: {:>10}".format(note.date_time))
-            print("-" * 20)
-   
-    def display_notes(self, notes):
-        if isinstance(notes, list):
-            for note in notes:
-                self.display_one_note(note)
-        else:
-            self.display_one_note(notes)
-    
-    def display_note_by_id(self, notes, note_id):
-        for note in notes:
-            if note.id == note_id:
-                self.display_one_note(note)
-                return
-        print(f"Заметка с ID {note_id} не найдена.")
-            
