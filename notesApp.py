@@ -44,6 +44,10 @@ class NotesApp:
                   self.notesService.display_notes(filtered_notes)
             else:
                   self.notesService.display_notes(notes)
+                  
+      def show_selected_note_by_id(self, note_id):
+            notes = self.notesService.load_notes()
+            self.notesService.display_note_by_id(notes, note_id)
       
       def run(self):
         while True:
@@ -53,7 +57,8 @@ class NotesApp:
             print("3. Отредактировать заметку")
             print("4. Удалить заметку")
             print("5. Показать заметки с фильтром")
-            print("6. Выход")
+            print("6. Показать одну заметку по ID")
+            print("7. Выход")
 
             choice = input("Введите число (1-6): ")
 
@@ -64,17 +69,20 @@ class NotesApp:
                 body = input("Введите содержимое заметки ")
                 self.add_note(title, body)
             elif choice == "3":
-                note_id = int(input("Введите id заметки "))
+                note_id = int(input("Введите ID заметки "))
                 title = input("Введите название заметки ")
                 body = input("Введите содержимое заметки ")
                 self.edit_notes(note_id, title, body)
             elif choice == "4":
-                note_id = int(input("Введите id заметки для удаления: "))
+                note_id = int(input("Введите ID заметки для удаления: "))
                 self.delete_notes(note_id)
             elif choice == "5":
                 filter_date = input("Введите данные по медели для сортировки по дате (DD-MM-YYYY): ")
                 self.show_notes(filter_date)
             elif choice == "6":
+                note_id = int(input("Введите ID заметки для поиска совпадений: "))
+                self.notesService.display_note_by_id(self.notesService.load_notes(), note_id)
+            elif choice == "7":
                 print("Выход произведен успешно.")
                 break
             else:

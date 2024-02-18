@@ -56,4 +56,11 @@ class NotesService:
                 self.display_one_note(note)
         else:
             self.display_one_note(notes)
+    
+    def display_note_by_id(self, notes, note_id):
+        for note in notes:
+            if note.id == note_id:
+                self.display_one_note(note)
+                return
+        print(f"Заметка с ID {note_id} не найдена.")
             
